@@ -24,9 +24,7 @@ library(fastDummies)
 #devtools::install_github("blangworthy/mnarmple")
 library(mnarmple)
 #####Example without competing risks
-###In this example we simulate 4 non-competing events and calculate the martingale and counting process
-###covariance and correlation matrices. All events have exponential 1 distribution and we estimate the
-###covariance/correlation matrices at timepoint 1.
+###In this example we simulate data with two different failure types, where failure type is missing for some subjects, and the missingness is not at random. We then use the likesplinefunctionmnarfixed() to estimate the MNAR MPLE. There is a single covariate, X, which affects the hazard for the second failure type, but not the first. X also has an effect on the probability of failure type being missing, along with the actual failure type (hence missing not at random). The true baseline hazard ratio is based on two Weibull distributions, and the baseline hazard ratio is estimated with a cubic spine.
 
 n <- 5000 # sample size
 ###Single binary covariate
