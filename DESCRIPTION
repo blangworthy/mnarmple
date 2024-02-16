@@ -3,8 +3,8 @@ Title: Calculate MNAR MPLE Log Likelihood
 Version: 0.1.0
 Authors:Benjamin Langworthy
 Description: This package has functions to calculate the log likelihood of the MNAR MPLE. By optimizing the log likelihood can get estimate of MNAR MPLE.
-Requires: fastDummies
-Suggests: boot, splines2, gtools, data.table
+Requires: fastDummies, data.table
+Suggests: boot, splines2, gtools
 License: GPL-2
 Encoding: UTF-8
 RoxygenNote: 7.3.1

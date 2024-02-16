@@ -14,7 +14,7 @@ likesplinefunctionmnarfixed <- function(dat,params,mnarparams,timevar,xvarsmiss,
   ###Order based on timevar if so we can use cumsum for denominator
   dat <- dat[order(-dat[[timevar]])]
   ties <- sum(duplicated(dat[[timevar]]))>0
-  dat <- dummy_cols(dat,select_columns = "cause")
+  dat <- fast.dummies::dummy_cols(dat,select_columns = "cause")
   ###parameters for misingness model
   ax <- params[grep("ax",names(params))]
   ay <- mnarparams
