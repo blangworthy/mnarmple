@@ -24,7 +24,9 @@ library(mnarmple)
 library(gtools)
 library(data.table)
 library(splines2)
-
+library(fastDummies)
+#devtools::install_github("blangworthy/mnarmple")
+library(mnarmple)
 #####Example without competing risks
 ###In this example we simulate 4 non-competing events and calculate the martingale and counting process
 ###covariance and correlation matrices. All events have exponential 1 distribution and we estimate the
