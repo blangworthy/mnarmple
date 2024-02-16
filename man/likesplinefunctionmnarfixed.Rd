@@ -12,7 +12,8 @@ likesplinefunctionmnarfixed(
   xvarsmiss,
   xvarscox,
   splinevars,
-  ncause
+  ncause,
+  ties = FALSE
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ likesplinefunctionmnarfixed(
 \item{splinevars}{The names of the variables that are the basis function for the spline model}
 
 \item{ncause}{The number of different falure types (not including unknown failure type)}
+
+\item{ties}{TRUE indicates there are tied failure times}
 }
 \description{
 #'This takes dat for competing risks survival times, where failure type is missing for some observations

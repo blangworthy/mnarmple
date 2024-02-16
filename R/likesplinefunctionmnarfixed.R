@@ -9,12 +9,13 @@
 #'@param xvarscox The names of the variables to be included in the Cox model
 #'@param splinevars The names of the variables that are the basis function for the spline model
 #'@param ncause The number of different falure types (not including unknown failure type)
+#'@param ties TRUE indicates there are tied failure times
 
-likesplinefunctionmnarfixed <- function(dat,params,mnarparams,timevar,xvarsmiss,xvarscox,splinevars,ncause){
+likesplinefunctionmnarfixed <- function(dat,params,mnarparams,timevar,xvarsmiss,xvarscox,splinevars,ncause,ties=FALSE){
   ###Order based on timevar if so we can use cumsum for denominator
   dat <- dat[order(-dat[[timevar]])]
   ties <- sum(duplicated(dat[[timevar]]))>0
-  dat <- fast.dummies::dummy_cols(dat,select_columns = "cause")
+  dat <- fastDummies::dummy_cols(dat,select_columns = "cause")
   ###parameters for misingness model
   ax <- params[grep("ax",names(params))]
   ay <- mnarparams
