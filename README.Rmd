@@ -1,0 +1,83 @@
+---
+output:
+  md_document:
+    variant: markdown_github
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#mnarmple: A package for calculating the MNAR MPLE likelihood for the cause specific Cox model with missing failure type
+
+The `mnarmple` package calculates the negative log likelihood of the MNAR MPLE likelihood equation for a given set of data and parameters, and can be used with tho `optim()` function to get parameter estimates based on maximizing the log-likelhood. It also includes a function that can be used with the `boot()` function from the package `boot`.
+
+##Installation
+```{install}
+devtools::install_github("blangworthy/mnarmple")
+library(mnarmple)
+```
+
+##Examples
+
+```{r example, results="hide", message=FALSE}
+library(gtools)
+library(data.table)
+library(splines2)
+
+#####Example without competing risks
+###In this example we simulate 4 non-competing events and calculate the martingale and counting process
+###covariance and correlation matrices. All events have exponential 1 distribution and we estimate the
+###covariance/correlation matrices at timepoint 1.
+
+n <- 5000 # sample size
+###Single binary covariate
+x <- rbinom(n,1,0.5)
+ncause <- 2
+
+###True Cox model log hazard ratios
+b11 <- 0
+b21 <- 0.69
+###Cause specific failure time
+t1 <- rweibull(n,shape = 1,scale = exp(-b11/1*x))
+t2 <- rweibull(n,shape = 1.5,scale = exp(-b21/1.5*x))
+
+
+tall <- cbind(t1,t2)
+####minimum time and cause indicator
+t <- apply(tall,1,min)
+cause <- apply(tall,1,which.min)
+
+####censoring time
+c <- rbeta(n,shape1=0.1,shape2 = 3)*5
+
+###observied time and censoring indicator
+combined <- cbind(t,c)
+z <- apply(combined,1,min)
+cens <- apply(combined,1,function(x)ifelse(which.min(x)==1,1,0))
+
+###True missingness model coefficients
+ax1 <- 0.5
+ay1 <- -0.5
+ay2 <- 0.5
+###Indicator for if cause is observed based on logit model (MNAR if ay1 doesn't equal ay2)
+prob <- x*ax1 + as.numeric(cause==1)*ay1 + as.numeric(cause==2)*ay2
+o <- rbinom(n,1,gtools::inv.logit(prob))
+
+
+###Basis function to estimate baseline hazard ratio as cubic spline
+basis <- splines2::bSpline(z,knots =quantile(z,c(1/3,2/3)),degree = 3 ,intercept = T)
+splinevars <- paste0("bas",1:ncol(basis))
+colnames(basis) <- splinevars
+
+###Create 'observed' data
+estdat <- data.table(x,z,cause,cens,o,basis)
+estdat$cause <- estdat$cause *estdat$o
+
+###Supplied starting parameters
+paramszero <- c(0,0,0,rep(1,ncol(basis)))
+names(paramszero) <- c("ax1","b11","b21",paste0("bas2",1:ncol(basis)))
+
+estszero <- optim(paramszero,method = "Nelder-Mead",fn = likesplinefunctionmnarfixed,dat = estdat,mnarparams=c(0.5,-0.5),timevar = "z",xvarsmiss="x",xvarscox="x",splinevars=splinevars,ncause=ncause)
+
+```
